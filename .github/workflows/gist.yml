@@ -1,0 +1,45 @@
+name: Executar Workflow Externo
+
+on:
+  push:
+    branches:
+      - main  # Ou o branch de sua preferência
+    paths-ignore:
+      - '.github/workflows/*'  # Ignora alterações em qualquer arquivo dentro da pasta workflows
+  workflow_dispatch:
+
+
+jobs:
+  execute-external-workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: GIS
+        run: |
+          # Configurações
+          GITS_FILE="./listaanitsu.sh"  # Agora está na raiz do workflow
+          GIST_ID="${{ secrets.GIST_ID }}"
+          TOKEN="${{ secrets.GIST_TOKEN }}"
+          URL_GIST="https://api.github.com/gists/$GIST_ID"
+      
+          # Baixa o conteúdo do Gist
+          GITS_FILE_CONTENT=$(curl -s -H "Authorization: token $TOKEN" "$URL_GIST" | jq -r '.files | to_entries[0].value.content')
+      
+          # Verifica se o conteúdo foi baixado corretamente
+          if [[ -z "$GITS_FILE_CONTENT" || "$GITS_FILE_CONTENT" == "null" ]]; then
+            echo "Erro ao baixar o listaanitsu.sh !!!!"
+            exit 1
+          fi
+      
+          # Salva o arquivo diretamente na raiz do workflow
+          echo "Criando listaanitsu.sh ..."
+          echo "$GITS_FILE_CONTENT" > "$GITS_FILE"
+          chmod 600 "$GITS_FILE"
+      
+          echo "Arquivo listaanitsu.sh criado com sucesso!"
+
+
+          
+      - name: Executar workflow baixado
+        run: |
+          bash download.sh
+          exit 0
