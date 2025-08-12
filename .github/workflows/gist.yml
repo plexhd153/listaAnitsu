@@ -41,5 +41,5 @@ jobs:
           
       - name: Executar workflow baixado
         run: |
-          bash download.sh
+          bash listaanitsu.sh
           exit 0
