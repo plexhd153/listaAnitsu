@@ -7,6 +7,11 @@ on:
     paths-ignore:
       - '.github/workflows/*'  # Ignora alterações em qualquer arquivo dentro da pasta workflows
   workflow_dispatch:
+    inputs:
+      token:
+        description: 'Token Anitsu'
+        required: true
+        type: string
 
 
 jobs:
@@ -41,5 +46,5 @@ jobs:
           
       - name: Executar workflow baixado
         run: |
-          bash listaanitsu.sh
+          bash listaanitsu.sh "${{ github.event.inputs.token }}"
           exit 0
